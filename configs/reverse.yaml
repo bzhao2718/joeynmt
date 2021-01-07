@@ -4,9 +4,12 @@ data:
     src: "src"
     trg: "trg"
     # generate data with scripts/generate_reverse_task.py
-    train: "../test/data/reverse/train"
-    dev: "../test/data/reverse/dev"
-    test: "../test/data/reverse/test"
+#    train: "../test/data/reverse/train"
+#    dev: "../test/data/reverse/dev"
+#    test: "../test/data/reverse/test"
+    train: "../gitignored/data/reverse/train"
+    dev: "../gitignored/data/reverse/dev"
+    test: "../gitignored/data/reverse/test"
     level: "word"
     lowercase: False
     max_sent_length: 25
@@ -14,8 +17,8 @@ data:
     src_voc_limit: 100
     trg_voc_min_freq: 0
     trg_voc_limit: 100
-    #src_vocab: "reverse_model/src_vocab.txt"
-    #trg_vocab: "reverse_model/trg_vocab.txt"
+    #src_vocab: "reverse_model/src_vocab.txt" ../gitignored/reverse_model/src_vocab.txt
+    #trg_vocab: "reverse_model/trg_vocab.txt" ../gitignored/reverse_model/trg_vocab.txt
 
 testing:
     beam_size: 1
@@ -38,7 +41,7 @@ training:
     validation_freq: 1000
     logging_freq: 100
     eval_metric: "bleu"
-    model_dir: "reverse_model"
+    model_dir: "../gitignored/reverse_model"
     overwrite: True
     shuffle: True
     use_cuda: False
