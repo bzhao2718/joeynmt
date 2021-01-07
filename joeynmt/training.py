@@ -754,9 +754,20 @@ def train(cfg_file: str) -> None:
          datasets=datasets_to_test)
 
 
+def supress_warnings():
+    """ignore warnings"""
+    import warnings
+    with warnings.catch_warnings():
+        warnings.simplefilter('ignore')
+
+
 if __name__ == "__main__":
+    # supress_warnings()
     parser = argparse.ArgumentParser('Joey-NMT')
-    parser.add_argument("config", default="configs/default.yaml", type=str,
+    # parser.add_argument("config", default="configs/default.yaml", type=str,
+    #                     help="Training configuration file (yaml).")
+    parser.add_argument("--config", default="../configs/reverse.yaml", type=str,
                         help="Training configuration file (yaml).")
     args = parser.parse_args()
     train(cfg_file=args.config)
+
