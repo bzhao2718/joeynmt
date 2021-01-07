@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import numpy as np
+from wodeutil.ml.data.sample import DataMaker
 
 np.random.seed(42)
 
@@ -14,6 +15,12 @@ def generate_samples(n=10000, low=0, high=10, maxlen=10):
     return samples
 
 
+def generate_str_reverse():
+    abs_data_path = '/Users/jackz/Documents/P Macbook/Laptop/Git Workspace/DataScience/MachineLearning/MyForks/joeynmt/gitignored/data/reverse'
+    DataMaker.generate_reverse_sample(abs_data_path, filename='train', sample_size=5000, min_len=9, max_len=30,my_seed=1)
+    DataMaker.generate_reverse_sample(abs_data_path, filename='dev', sample_size=1000, min_len=9, max_len=30,my_seed=2)
+    DataMaker.generate_reverse_sample(abs_data_path, filename='test', sample_size=1000, min_len=9, max_len=30,my_seed=3)
+
 def sample_to_str(sample):
     return " ".join(map(str, sample))
 
@@ -26,14 +33,13 @@ def save_samples(samples, prefix="train", ext="src", reverse=False):
 
 
 def generate_task(train="train", dev="dev", test="test", src="src", trg="trg"):
-
     # train
     samples = generate_samples(50000, high=50, maxlen=25)
     save_samples(samples, prefix=train, ext=src, reverse=False)
     save_samples(samples, prefix=train, ext=trg, reverse=True)
 
     # dev
-    samples = generate_samples(1000, high=50,  maxlen=30)
+    samples = generate_samples(1000, high=50, maxlen=30)
     save_samples(samples, prefix=dev, ext=src, reverse=False)
     save_samples(samples, prefix=dev, ext=trg, reverse=True)
 
@@ -44,4 +50,5 @@ def generate_task(train="train", dev="dev", test="test", src="src", trg="trg"):
 
 
 if __name__ == "__main__":
-    generate_task()
+    # generate_task()
+    generate_str_reverse()

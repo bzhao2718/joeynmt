@@ -409,9 +409,15 @@ class TrainManager:
                                                   batch_loss, self.stats.steps)
                         elapsed = time.time() - start - total_valid_duration
                         elapsed_tokens = self.stats.total_tokens - start_tokens
+                        # logger.info(
+                        #     "Epoch %3d, Step: %8d, Batch Loss: %12.6f, "
+                        #     "Tokens per Sec: %8.0f, Lr: %.6f",
+                        #     epoch_no + 1, self.stats.steps, batch_loss,
+                        #     elapsed_tokens / elapsed,
+                        #     self.optimizer.param_groups[0]["lr"])
                         logger.info(
-                            "Epoch %3d, Step: %8d, Batch Loss: %12.6f, "
-                            "Tokens per Sec: %8.0f, Lr: %.6f",
+                            "Epoch %3d, Step: %6d, Batch Loss: %8.6f, "
+                            "%2.0f token/sec, Lr: %.6f",
                             epoch_no + 1, self.stats.steps, batch_loss,
                             elapsed_tokens / elapsed,
                             self.optimizer.param_groups[0]["lr"])
