@@ -3,6 +3,8 @@
 import numpy as np
 import os
 
+from wodeutil.ml.data.sample import DataMaker
+
 np.random.seed(42)
 
 
@@ -49,5 +51,12 @@ def generate_task(train="train", dev="dev", test="test", src="src", trg="trg"):
     save_samples(samples, prefix=test, ext=trg, reverse=False)
 
 
+def generate_str_copy():
+    abs_data_path = '/Users/jackz/Documents/P Macbook/Laptop/Git Workspace/DataScience/MachineLearning/MyForks/joeynmt/gitignored/data/copy'
+    DataMaker.generate_copy_sample(abs_data_path, filename='train', sample_size=5000, min_len=9, max_len=30,my_seed=1)
+    DataMaker.generate_copy_sample(abs_data_path, filename='dev', sample_size=1000, min_len=9, max_len=35,my_seed=2)
+    DataMaker.generate_copy_sample(abs_data_path, filename='test', sample_size=1000, min_len=9, max_len=35,my_seed=3)
+
 if __name__ == "__main__":
-    generate_task()
+    # generate_task()
+    generate_str_copy()

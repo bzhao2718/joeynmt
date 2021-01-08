@@ -37,6 +37,7 @@ from joeynmt.prediction import test
 # for fp16 training
 try:
     from apex import amp
+
     amp.register_half_function(torch, "einsum")
 except ImportError as no_apex:
     # error handling in TrainManager object construction
@@ -194,9 +195,9 @@ class TrainManager:
         # model parameters
         if "load_model" in train_config.keys():
             self.init_from_checkpoint(train_config["load_model"],
-                reset_best_ckpt=train_config.get("reset_best_ckpt", False),
-                reset_scheduler=train_config.get("reset_scheduler", False),
-                reset_optimizer=train_config.get("reset_optimizer", False))
+                                      reset_best_ckpt=train_config.get("reset_best_ckpt", False),
+                                      reset_scheduler=train_config.get("reset_scheduler", False),
+                                      reset_optimizer=train_config.get("reset_optimizer", False))
 
         # multi-gpu training (should be after apex fp16 initialization)
         if self.n_gpu > 1:
@@ -352,7 +353,7 @@ class TrainManager:
             "\tbatch size per device: %d\n"
             "\ttotal batch size (w. parallel & accumulation): %d",
             self.device, self.n_gpu, self.fp16, self.batch_multiplier,
-            self.batch_size//self.n_gpu if self.n_gpu > 1 else self.batch_size,
+            self.batch_size // self.n_gpu if self.n_gpu > 1 else self.batch_size,
             self.batch_size * self.batch_multiplier)
 
         for epoch_no in range(self.epochs):
@@ -417,7 +418,7 @@ class TrainManager:
                         #     self.optimizer.param_groups[0]["lr"])
                         logger.info(
                             "Epoch %3d, Step: %6d, Batch Loss: %8.6f, "
-                            "%2.0f token/sec, Lr: %.6f",
+                            "Tokens/sec: %2.0f, Lr: %.6f",
                             epoch_no + 1, self.stats.steps, batch_loss,
                             elapsed_tokens / elapsed,
                             self.optimizer.param_groups[0]["lr"])
@@ -426,8 +427,8 @@ class TrainManager:
                         start_tokens = self.stats.total_tokens
 
                     # Only add complete loss of full mini-batch to epoch_loss
-                    epoch_loss += batch_loss    # accumulate epoch_loss
-                    batch_loss = 0              # rest batch_loss
+                    epoch_loss += batch_loss  # accumulate epoch_loss
+                    batch_loss = 0  # rest batch_loss
 
                     # validate on the entire dev set
                     if self.stats.steps % self.validation_freq == 0:
@@ -515,11 +516,11 @@ class TrainManager:
                 use_cuda=self.use_cuda,
                 max_output_length=self.max_output_length,
                 compute_loss=True,
-                beam_size=1,                # greedy validations
+                beam_size=1,  # greedy validations
                 batch_type=self.eval_batch_type,
-                postprocess=True,           # always remove BPE for validation
-                bpe_type=self.bpe_type,     # "subword-nmt" or "sentencepiece"
-                sacrebleu=self.sacrebleu,   # sacrebleu options
+                postprocess=True,  # always remove BPE for validation
+                bpe_type=self.bpe_type,  # "subword-nmt" or "sentencepiece"
+                sacrebleu=self.sacrebleu,  # sacrebleu options
                 n_gpu=self.n_gpu
             )
 
@@ -712,8 +713,8 @@ def train(cfg_file: str) -> None:
 
     # make logger
     model_dir = make_model_dir(cfg["training"]["model_dir"],
-                   overwrite=cfg["training"].get("overwrite", False))
-    _ = make_logger(model_dir, mode="train")    # version string returned
+                               overwrite=cfg["training"].get("overwrite", False))
+    _ = make_logger(model_dir, mode="train")  # version string returned
     # TODO: save version number in model checkpoints
 
     # set the random seed
@@ -767,8 +768,17 @@ def supress_warnings():
         warnings.simplefilter('ignore')
 
 
-if __name__ == "__main__":
-    # supress_warnings()
+def test_copy_task():
+    parser = argparse.ArgumentParser('Joey-NMT')
+    # parser.add_argument("config", default="configs/default.yaml", type=str,
+    #                     help="Training configuration file (yaml).")
+    parser.add_argument("--config", default="../configs/copy.yaml", type=str,
+                        help="Training configuration file (yaml).")
+    args = parser.parse_args()
+    train(cfg_file=args.config)
+
+
+def test_reverse_task():
     parser = argparse.ArgumentParser('Joey-NMT')
     # parser.add_argument("config", default="configs/default.yaml", type=str,
     #                     help="Training configuration file (yaml).")
@@ -777,3 +787,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
     train(cfg_file=args.config)
 
+
+if __name__ == "__main__":
+    # supress_warnings()
+    # test_reverse_task()
+    test_copy_task()
