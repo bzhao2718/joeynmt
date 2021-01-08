@@ -99,7 +99,7 @@ class RecurrentDecoder(Decoder):
 
         # combine output with context vector before output layer (Luong-style)
         self.att_vector_layer = nn.Linear(
-            hidden_size + encoder.output_size, hidden_size, bias=True)
+            hidden_size + encoder.output_size, hidden_size, bias=True) #hidden_size 64, encoder output_size 128 (2*hidden_size if bidir)
 
         self.output_layer = nn.Linear(hidden_size, vocab_size, bias=False)
         self._output_size = vocab_size
@@ -240,18 +240,18 @@ class RecurrentDecoder(Decoder):
 
         if self.input_feeding:
             # concatenate the input with the previous attention vector
-            rnn_input = torch.cat([prev_embed, prev_att_vector], dim=2)
+            rnn_input = torch.cat([prev_embed, prev_att_vector], dim=2) # prev_embed: (10,1,16), prev_att_vector: (10,1,64); rnn_input: (10,1,80)
         else:
             rnn_input = prev_embed
 
         rnn_input = self.emb_dropout(rnn_input)
 
         # rnn_input: batch x 1 x emb+2*enc_size
-        _, hidden = self.rnn(rnn_input, hidden)
+        _, hidden = self.rnn(rnn_input, hidden)# hidden tuple, h_0, c_0, each with shape (1,10,64)
 
         # use new (top) decoder layer as attention query
         if isinstance(hidden, tuple):
-            query = hidden[0][-1].unsqueeze(1)
+            query = hidden[0][-1].unsqueeze(1) # query shape: (10,1,64), hidden tuple (2 items h0,c0), each shape (1,10,64)
         else:
             query = hidden[-1].unsqueeze(1)  # [#layers, B, D] -> [B, 1, D]
 
@@ -263,12 +263,12 @@ class RecurrentDecoder(Decoder):
 
         # return attention vector (Luong)
         # combine context with decoder hidden state before prediction
-        att_vector_input = torch.cat([query, context], dim=2)
+        att_vector_input = torch.cat([query, context], dim=2) # contetxt shape (10,1,128); att_vector_input shape (10,1,192)
         # batch x 1 x 2*enc_size+hidden_size
         att_vector_input = self.hidden_dropout(att_vector_input)
 
         att_vector = torch.tanh(self.att_vector_layer(att_vector_input))
-
+        # att_vector shape (10,1,64)
         # output: batch x 1 x hidden_size
         return att_vector, hidden, att_probs
 
@@ -347,7 +347,7 @@ class RecurrentDecoder(Decoder):
         # (the "keys" for the attention mechanism)
         # this is only done for efficiency
         if hasattr(self.attention, "compute_proj_keys"):
-            self.attention.compute_proj_keys(keys=encoder_output)
+            self.attention.compute_proj_keys(keys=encoder_output) # encoder_output shape (10,15,128)
 
         # here we store all intermediate attention vectors (used for prediction)
         att_vectors = []
@@ -358,11 +358,11 @@ class RecurrentDecoder(Decoder):
         if prev_att_vector is None:
             with torch.no_grad():
                 prev_att_vector = encoder_output.new_zeros(
-                    [batch_size, 1, self.hidden_size])
+                    [batch_size, 1, self.hidden_size]) # prev_att_vector shape (10,1,64)
 
         # unroll the decoder RNN for `unroll_steps` steps
-        for i in range(unroll_steps):
-            prev_embed = trg_embed[:, i].unsqueeze(1)  # batch, 1, emb
+        for i in range(unroll_steps): # unroll_steps 15
+            prev_embed = trg_embed[:, i].unsqueeze(1)  # batch, 1, emb # trg_embed shape (10,15,16), batch size, src len, emb dim; #prev_embed shape (10,1,16)
             prev_att_vector, hidden, att_prob = self._forward_step(
                 prev_embed=prev_embed,
                 prev_att_vector=prev_att_vector,

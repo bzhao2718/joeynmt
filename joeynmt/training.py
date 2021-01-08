@@ -783,5 +783,5 @@ def test_reverse_task():
 
 if __name__ == "__main__":
     # supress_warnings()
-    # test_reverse_task()
-    test_copy_task()
+    test_reverse_task()
+    # test_copy_task()

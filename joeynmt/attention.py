@@ -171,7 +171,7 @@ class LuongAttention(AttentionMechanism):
             attention probabilities of shape (batch_size, 1, src_length)
         """
         self._check_input_shapes_forward(query=query, mask=mask, values=values)
-
+        # query (10,1,64), mask (10,1,15), values (10,15,128), self.proj_keys (10,15,64)
         assert self.proj_keys is not None,\
             "projection keys have to get pre-computed"
         assert mask is not None, "mask is required"
@@ -181,13 +181,13 @@ class LuongAttention(AttentionMechanism):
 
         # mask out invalid positions by filling the masked out parts with -inf
         scores = torch.where(mask, scores, scores.new_full([1], float('-inf')))
-
+        # scores shape (10,1,15); = (10,1,64) @ (10,64,15)
         # turn scores to probabilities
         alphas = F.softmax(scores, dim=-1)  # batch x 1 x src_len
-
+        # alphas shape (10,1,15)
         # the context vector is the weighted sum of the values
         context = alphas @ values  # batch x 1 x values_size
-
+        # context shape (10,1,128)
         return context, alphas
 
     def compute_proj_keys(self, keys: Tensor):

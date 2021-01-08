@@ -21,8 +21,8 @@ class Batch:
         :param pad_index:
         :param use_cuda:
         """
-        self.src, self.src_length = torch_batch.src
-        self.src_mask = (self.src != pad_index).unsqueeze(1)
+        self.src, self.src_length = torch_batch.src # src shape (10,15), batch_size, max_seq_len
+        self.src_mask = (self.src != pad_index).unsqueeze(1) # shape (10,1,15)
         self.nseqs = self.src.size(0)
         self.trg_input = None
         self.trg = None
@@ -32,12 +32,12 @@ class Batch:
         self.use_cuda = use_cuda
 
         if hasattr(torch_batch, "trg"):
-            trg, trg_length = torch_batch.trg
+            trg, trg_length = torch_batch.trg #trg shape (10,16), the last is 3, then padding idx 1
             # trg_input is used for teacher forcing, last one is cut off
-            self.trg_input = trg[:, :-1]
-            self.trg_length = trg_length
+            self.trg_input = trg[:, :-1] # trg_input shape (10,15)
+            self.trg_length = trg_length # 10
             # trg is used for loss computation, shifted by one since BOS
-            self.trg = trg[:, 1:]
+            self.trg = trg[:, 1:] # self.trg shape now (10,15)
             # we exclude the padded areas from the loss computation
             self.trg_mask = (self.trg_input != pad_index).unsqueeze(1)
             self.ntokens = (self.trg != pad_index).data.sum().item()
