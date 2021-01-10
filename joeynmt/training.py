@@ -765,7 +765,7 @@ def test_copy_task():
     parser = argparse.ArgumentParser('Joey-NMT')
     # parser.add_argument("config", default="configs/default.yaml", type=str,
     #                     help="Training configuration file (yaml).")
-    parser.add_argument("--config", default="../configs/copy.yaml", type=str,
+    parser.add_argument("--config", default="../configs/transformer_copy.yaml", type=str,
                         help="Training configuration file (yaml).")
     args = parser.parse_args()
     train(cfg_file=args.config)
@@ -775,7 +775,7 @@ def test_reverse_task():
     parser = argparse.ArgumentParser('Joey-NMT')
     # parser.add_argument("config", default="configs/default.yaml", type=str,
     #                     help="Training configuration file (yaml).")
-    parser.add_argument("--config", default="../configs/reverse.yaml", type=str,
+    parser.add_argument("--config", default="../configs/transformer_reverse.yaml", type=str,
                         help="Training configuration file (yaml).")
     args = parser.parse_args()
     train(cfg_file=args.config)
@@ -783,5 +783,5 @@ def test_reverse_task():
 
 if __name__ == "__main__":
     # supress_warnings()
-    # test_reverse_task()
-    test_copy_task()
+    test_reverse_task()
+    # test_copy_task()

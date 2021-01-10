@@ -3,9 +3,9 @@ name: "copy_experiment"
 data:
     src: "src"
     trg: "trg"
-    train: "test/data/copy/train"
-    dev: "test/data/copy/dev"
-    test: "test/data/copy/test"
+    train: "../gitignored/data/copy/train"
+    dev: "../gitignored/data/copy/dev"
+    test: "../gitignored/data/copy/test"
     level: "word"
     lowercase: False
     max_sent_length: 21
@@ -29,10 +29,10 @@ training:
     batch_size: 10
     batch_type: "sentence"
     epochs: 30
-    validation_freq: 1000
+    validation_freq: 500
     logging_freq: 100
     eval_metric: "bleu"
-    model_dir: "models/transformer_copy"
+    model_dir: "../gitignored/models/transformer_copy"
     overwrite: True
     shuffle: True
     use_cuda: False
